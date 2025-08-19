@@ -1,0 +1,44 @@
+# Nome del processo che vedrai su GitHub
+name: Compila Gestionale Gitemania per Windows
+
+# Quando eseguire questo processo: ad ogni 'push' sul repository
+on: [push]
+
+jobs:
+  build-windows-exe:
+    # Usa l'ultima versione di Windows disponibile su GitHub
+    runs-on: windows-latest
+
+    steps:
+      # 1. Scarica il codice del tuo repository
+      - name: Checkout del codice
+        uses: actions/checkout@v4
+
+      # 2. Imposta l'ambiente Python
+      - name: Setup Python 3.12
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      # 3. Installa tutte le dipendenze necessarie
+      - name: Installa le dipendenze
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+        shell: cmd
+
+      # 4. Esegue il comando di compilazione
+      # Questo è lo stesso comando che lanciavi tu, ma eseguito in un ambiente pulito
+      - name: Compila l'eseguibile .exe
+        run: |
+          python setup.py build
+        shell: cmd
+
+      # 5. Carica il risultato finale come "artefatto" scaricabile
+      - name: Upload dell'eseguibile compilato
+        uses: actions/upload-artifact@v4
+        with:
+          # Nome del file ZIP che potrai scaricare
+          name: GestionaleGitemania-Windows-EXE
+          # Percorso della cartella da zippare e caricare
+          path: dist/GestionaleGitemania_Portable/
